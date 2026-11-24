@@ -313,10 +313,10 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
 .set-meta{font-size:12.5px;color:var(--dim)}
 .platforms{display:flex;flex-wrap:wrap;align-items:center;gap:12px 28px;margin-top:clamp(40px,5vw,64px);padding-top:24px;border-top:1px solid var(--line);font-size:15px;color:var(--dim)}
 .platforms a{color:#fff;font-weight:290;font-size:clamp(22px,2.4vw,32px);letter-spacing:-0.04em;text-transform:uppercase;transition:color .2s ease}
-.platforms a:hover{color:var(--accent)}
+.platforms a:hover{color:var(--brand,var(--accent))}
 .ico{width:1em;height:1em;flex:none}
 .platforms a,.contact ul a{display:inline-flex;align-items:center;gap:.45em}
-.platforms .ico{width:.82em;height:.82em}
+.platforms .ico{width:.82em;height:.82em;color:var(--brand,currentColor)}
 .contact ul li{margin-top:12px}
 .contact ul .ico{width:1.05em;height:1.05em}
 
@@ -916,7 +916,10 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
     var url=s.url||sc; if(url&&url!=='#') window.open(url,'_blank','noopener');
   });
   var pf=sets.platforms||[]; $('platforms').hidden=!pf.length;
-  $('platforms').innerHTML='<span>'+esc(t('listenAt'))+'</span>'+pf.map(function(p){return '<a href="'+esc(p[1])+'" target="_blank" rel="noopener">'+icon(p[0])+esc(p[0])+'</a>'}).join('');
+  /* each platform's logo in its own brand colour */
+  var BRAND={soundcloud:'#FF5500',spotify:'#1DB954',youtube:'#FF0000',applemusic:'#FA243C',mixcloud:'#5000FF',beatport:'#01FF95',bandcamp:'#1DA0C3',tidal:'#FFFFFF',deezer:'#A238FF',instagram:'#E4405F',tiktok:'#FFFFFF'};
+  var brand=function(n){ var c=BRAND[String(n).toLowerCase().replace(/[^a-z]/g,'')]; return c?' style="--brand:'+c+'"':''; };
+  $('platforms').innerHTML='<span>'+esc(t('listenAt'))+'</span>'+pf.map(function(p){return '<a href="'+esc(p[1])+'" target="_blank" rel="noopener"'+brand(p[0])+'>'+icon(p[0])+esc(p[0])+'</a>'}).join('');
 
   /* ---------- booking + contact ---------- */
   if($('f-type')) $('f-type').innerHTML='<option value="" selected disabled>'+esc(t('choose'))+'</option>'+(booking.types||t('types')).map(function(x){return '<option>'+esc(x)+'</option>'}).join('');
