@@ -22,7 +22,8 @@
 <link rel="preload" href="assets/hanken-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" href="assets/samuel-logo.webp">
 <!-- Todo el contenido vive en config.js. Este archivo es el motor: no hace falta tocarlo. -->
-<script src="config.js"></script>
+<!-- config.js se pide siempre fresco: fechas y line ups nuevos se ven sin esperar a la caché -->
+<script>document.write('<script src="config.js?v='+Date.now()+'"><\/script>')</script>
 <script>
 /* LANGUAGE: the site opens in SITE.lang (English by default); ?lang=es shows Spanish.
    Any config value written as { en: '...', es: '...' } is swapped for the active language. */
