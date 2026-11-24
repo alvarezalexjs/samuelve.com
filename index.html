@@ -278,6 +278,17 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
 .is-past .date time b{font-size:20px;color:var(--nav)}
 .is-past .d-city{font-size:clamp(20px,2.2vw,28px);color:var(--nav)}
 .is-past .d-venue{margin-top:6px}
+/* recent shows: folded and out of focus until asked for */
+.recent-toggle{display:flex;align-items:center;gap:14px;width:100%;padding:0;background:none;border:0;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;text-align:left;cursor:pointer}
+.recent-count{font-size:12px;letter-spacing:.04em;color:var(--dim)}
+.recent-toggle svg{width:14px;height:14px;margin-left:auto;color:var(--dim);transition:transform .35s var(--ease-out),color .2s ease}
+.recent.is-open .recent-toggle svg{transform:rotate(180deg)}
+@media (hover:hover) and (pointer:fine){.recent-toggle:hover svg{color:#fff}}
+.recent-toggle:focus-visible{outline:2px solid #fff;outline-offset:6px}
+.recent-clip{position:relative;overflow:hidden;height:120px;transition:height .6s var(--expo)}
+.recent-clip .dates{filter:blur(6px);opacity:.45;transition:filter .5s ease,opacity .5s ease}
+.recent:not(.is-open) .recent-clip{cursor:pointer;-webkit-mask-image:linear-gradient(#000 20%,transparent);mask-image:linear-gradient(#000 20%,transparent)}
+.recent.is-open .recent-clip .dates{filter:none;opacity:1}
 .dates-foot a{color:#fff;text-decoration:underline;text-underline-offset:4px}
 
 /* ---------- Sets ---------- */
@@ -487,6 +498,7 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
 
 @media (pointer:coarse){
   .bio-more{height:44px;padding:0 18px 0 16px}
+  .recent-toggle{min-height:44px}
   .lang a{min-height:40px}
   .lang{height:auto}
   .platforms a,.contact ul a,.contact p a,.foot-bar a,.dates-foot a,.booking-intro a,#dockHome{display:inline-flex;align-items:center;min-height:44px}
@@ -497,7 +509,7 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
 @media (prefers-reduced-motion:reduce){
   .nav-links,.nav.is-open .nav-links,.menu-btn i::before,.menu-btn i::after,.dock,.dock.is-shown{transition:none}
   .photo.is-placed,.pulse{animation:none}
-  .set-cover img,.bio-clip,.bio-more svg,.t-arrow{transition:none}
+  .set-cover img,.bio-clip,.bio-more svg,.t-arrow,.recent-clip,.recent-clip .dates,.recent-toggle svg{transition:none}
   .t-dot,.news-tag i{animation:none}
 }
 </style>
@@ -579,9 +591,14 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
     <div>
       <ol class="dates" id="dates"></ol>
       <p class="dates-foot rv" id="datesFoot"><span data-t="name"></span><span data-ui="inYourCity"> in your city: </span><a href="#booking" data-ui="bookADate">book a date</a>.</p>
-      <div id="recent" hidden>
-        <h3 class="sub rv" data-ui="recent">Recent shows</h3>
-        <ol class="dates is-past" id="datesPast"></ol>
+      <div class="recent" id="recent" hidden>
+        <h3 class="sub rv"><button class="recent-toggle" id="recentToggle" type="button" aria-expanded="false" aria-controls="recentClip">
+          <span data-ui="recent">Recent shows</span><span class="recent-count mono" id="recentCount"></span>
+          <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        </button></h3>
+        <div class="recent-clip" id="recentClip">
+          <ol class="dates is-past" id="datesPast"></ol>
+        </div>
       </div>
     </div>
     <figure class="dates-photo ph rv-img" data-photo="dates.photo"></figure>
@@ -833,6 +850,22 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
   $('recent').hidden=!past.length;
   if(dates.bookingLine===false) $('datesFoot').hidden=true;
   $('datesPast').innerHTML=past.map(function(d,i){return row(d,i,true)}).join('');
+  /* recent shows start folded and blurred; the heading (or the blurred preview) opens them */
+  (function(){
+    var box=$('recent'), btn=$('recentToggle'), clip=$('recentClip'), list=$('datesPast'), open=false;
+    $('recentCount').textContent=past.length?'('+past.length+')':'';
+    list.inert=true;
+    function set(o){
+      open=o; box.classList.toggle('is-open',o); btn.setAttribute('aria-expanded',o); list.inert=!o;
+      var from=clip.getBoundingClientRect().height;
+      clip.style.height=from+'px'; clip.offsetHeight;
+      clip.style.height=o?clip.scrollHeight+'px':'';
+      if(o) setTimeout(function(){ if(open) clip.style.height='auto'; },700);   /* after the .6s height transition (or at once with reduced motion) */
+      if(o) list.querySelectorAll('.rv').forEach(function(r){r.classList.add('is-in')});
+    }
+    btn.addEventListener('click',function(){ set(!open); });
+    clip.addEventListener('click',function(){ if(!open) set(true); });
+  })();
   var nx=up.filter(function(d){return d.status!=='soldout'})[0];
   if(nx){ $('nextMeta').textContent=nx.dow+' '+nx.day+' '+nx.month+' • '+nx.city; $('next').hidden=false;
     if(nx.url){ var tx=$('nextTix'); tx.href=nx.url; tx.hidden=false; tx.setAttribute('aria-label',t('ticketFor',{t:t('tickets'),city:nx.city,date:nx.day+' '+nx.month,seller:seller(nx)})); } }
