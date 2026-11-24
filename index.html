@@ -278,11 +278,12 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
 .is-past .date time b{font-size:20px;color:var(--nav)}
 .is-past .d-city{font-size:clamp(20px,2.2vw,28px);color:var(--nav)}
 .is-past .d-venue{margin-top:6px}
-/* recent shows: the latest two sit out of focus; the button opens them all */
+/* recent shows: the latest one in focus, the next one blurred behind it; the button opens them all */
 .recent-clip{position:relative;overflow:hidden;transition:height .6s var(--expo)}
-.recent-clip .dates{filter:blur(5px);opacity:.5;transition:filter .5s ease,opacity .5s ease}
-.recent:not(.is-open) .recent-clip{cursor:pointer;-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
-.recent.is-open .recent-clip .dates{filter:none;opacity:1}
+.recent-clip .dates>li+li{filter:blur(5px);opacity:.5;transition:filter .5s ease,opacity .5s ease}
+.recent:not(.is-open) .recent-clip.has-more{-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+.recent:not(.is-open) .recent-clip .dates>li+li{cursor:pointer}
+.recent.is-open .recent-clip .dates>li+li{filter:none;opacity:1}
 .recent-more{margin-top:18px}
 .recent-more[aria-expanded="true"] svg{transform:rotate(180deg)}
 .dates-foot a{color:#fff;text-decoration:underline;text-underline-offset:4px}
@@ -504,7 +505,7 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
 @media (prefers-reduced-motion:reduce){
   .nav-links,.nav.is-open .nav-links,.menu-btn i::before,.menu-btn i::after,.dock,.dock.is-shown{transition:none}
   .photo.is-placed,.pulse{animation:none}
-  .set-cover img,.bio-clip,.bio-more svg,.t-arrow,.recent-clip,.recent-clip .dates{transition:none}
+  .set-cover img,.bio-clip,.bio-more svg,.t-arrow,.recent-clip,.recent-clip .dates>li{transition:none}
   .t-dot,.news-tag i{animation:none}
 }
 </style>
@@ -843,22 +844,24 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
   $('recent').hidden=!past.length;
   if(dates.bookingLine===false) $('datesFoot').hidden=true;
   $('datesPast').innerHTML=past.map(function(d,i){return row(d,i,true)}).join('');
-  /* recent shows: the latest two show blurred; "see all" opens the full list in focus */
+  /* recent shows: the latest one in focus, the next one blurred; "see all" opens the rest */
   (function(){
     var box=$('recent'), btn=$('recentToggle'), clip=$('recentClip'), list=$('datesPast'), open=false, raf=0;
-    var label=btn.firstChild;
-    function peek(){ var li=list.children; return li.length>2?li[2].offsetTop:list.scrollHeight; }
+    var label=btn.firstChild, rows=list.children, more=rows.length>1;
+    btn.hidden=!more; clip.classList.toggle('has-more',more);
+    function lock(on){ for(var i=1;i<rows.length;i++) rows[i].inert=on; }
+    function peek(){ return rows.length>2?rows[2].offsetTop:list.scrollHeight; }
     function fit(){ if(!open) clip.style.height=peek()+'px'; }
-    list.inert=true; fit();
+    lock(true); fit();
     function set(o){
-      open=o; box.classList.toggle('is-open',o); btn.setAttribute('aria-expanded',o); list.inert=!o;
+      open=o; box.classList.toggle('is-open',o); btn.setAttribute('aria-expanded',o); lock(!o);
       label.textContent=t(o?'seeLess':'seeAll');
       clip.style.height=clip.getBoundingClientRect().height+'px'; clip.offsetHeight;
       clip.style.height=(o?list.scrollHeight:peek())+'px';
       if(o){ list.querySelectorAll('.rv').forEach(function(r){r.classList.add('is-in')}); setTimeout(function(){ if(open) clip.style.height='auto'; },700); }
     }
     btn.addEventListener('click',function(){ set(!open); });
-    clip.addEventListener('click',function(){ if(!open) set(true); });
+    list.addEventListener('click',function(e){ var li=e.target.closest('li'); if(!open&&li&&li!==rows[0]) set(true); });
     addEventListener('resize',function(){ cancelAnimationFrame(raf); raf=requestAnimationFrame(fit); });
     if(document.fonts) document.fonts.ready.then(fit);
   })();
