@@ -37,7 +37,7 @@
     return v; }
   window.SITE=pick(S); window.__lang=L; document.documentElement.lang=L;
   var UI={
-    en:{skip:'Skip to content',dockNav:'Quick navigation',home:'Home',mainNav:'Main',menu:'MENU',close:'CLOSE',next:'Next show',gallery:'Gallery',
+    en:{skip:'Skip to content',dockNav:'Quick navigation',home:'Home',mainNav:'Main',menu:'MENU',close:'CLOSE',next:'Next show',gallery:'Gallery',galPrev:'Previous photo',galNext:'Next photo',
       bio:'Bio',dates:'Dates',recent:'Recent shows',sets:'Sets',booking:'Booking',contact:'Contact',backTop:'Back to top',backHome:', back to top',reserve:'BOOK',
       inYourCity:' in your city: ',bookADate:'book a date',writeDirect:'Prefer to write directly:',fName:'Name',fMail:'Email',fType:'Event type',fDate:'Event date',
       fCity:'City and venue',fMsg:'Message',fMsgPh:'Times, set length, capacity, rough budget',fSend:'SEND REQUEST',choose:'Choose an option',complete:'Please fill in: ',
@@ -49,7 +49,7 @@
       sending:'Sending…',thanks:'Done! You are on the list.',failed:'Could not send. Please try again in a moment.',fullBio:'FULL BIO',lessBio:'CLOSE BIO',lineup:'Line up',tba:'Venue TBA',seeAll:'SEE ALL',seeLess:'SHOW LESS',nowPlaying:'Now playing',tapToPlay:'Tap to listen',pause:'Pause {t}',closePlayer:'Close player',eventOn:'Event page on {seller} (opens in a new tab)',
       navBio:'BIO',navDates:'DATES',navSets:'SETS',navBooking:'BOOKING',navContact:'CONTACT',lang:'Language',fonts:'Try title fonts',current:'Current',metaDefault:'{name}. Bio, dates, sets, booking and contact.',
       dow:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],mon:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']},
-    es:{skip:'Saltar al contenido',dockNav:'Navegación rápida',home:'Inicio',mainNav:'Principal',menu:'MENÚ',close:'CERRAR',next:'Próxima fecha',gallery:'Galería',
+    es:{skip:'Saltar al contenido',dockNav:'Navegación rápida',home:'Inicio',mainNav:'Principal',menu:'MENÚ',close:'CERRAR',next:'Próxima fecha',gallery:'Galería',galPrev:'Foto anterior',galNext:'Foto siguiente',
       bio:'Bio',dates:'Fechas',recent:'Shows recientes',sets:'Sets',booking:'Booking',contact:'Contacto',backTop:'Volver arriba',backHome:', volver al inicio',reserve:'RESERVAR',
       inYourCity:' en tu ciudad: ',bookADate:'reserva una fecha',writeDirect:'Si prefieres escribir directo:',fName:'Nombre',fMail:'Correo',fType:'Tipo de evento',fDate:'Fecha del evento',
       fCity:'Ciudad y lugar',fMsg:'Mensaje',fMsgPh:'Horario, duración del set, aforo, presupuesto aproximado',fSend:'ENVIAR SOLICITUD',choose:'Elige una opción',complete:'Completa: ',
@@ -219,8 +219,22 @@ button,input,select,textarea{font:inherit;color:inherit}
 .facts dt{font-size:13px;color:var(--dim)}
 .facts dd{margin-top:6px;font-weight:290;font-size:20px;letter-spacing:-0.03em;text-transform:uppercase}
 
-.gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,1.2vw,16px);margin-top:clamp(56px,8vw,112px)}
-.gallery figure{aspect-ratio:2/3}
+.gallery{--gap:clamp(8px,1.2vw,16px);--per:2.6;margin-top:clamp(56px,8vw,112px)}
+.gal-track{display:flex;gap:var(--gap);overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;overscroll-behavior-x:contain}
+.gal-track::-webkit-scrollbar{display:none}
+.gal-track{--w:calc((100% - (var(--per) - 1) * var(--gap)) / var(--per))}
+.gal-track figure{flex:0 0 var(--w);aspect-ratio:2/3;scroll-snap-align:start;margin:0}
+.gal-track::after{content:'';flex:0 0 calc(100% - var(--w) - var(--gap))}
+.gal-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.gal-count{font-size:14px;letter-spacing:.04em;color:var(--dim);font-variant-numeric:tabular-nums}
+.gal-count b{font-weight:400;color:var(--ink)}
+.gal-btns{display:flex;gap:8px}
+.gal-btn{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--line);border-radius:2px;background:transparent;color:var(--ink);cursor:pointer;transition:background .15s,border-color .15s,transform .16s var(--ease-out)}
+.gal-btn svg{width:14px;height:14px}
+.gal-btn:hover{border-color:var(--accent);background:var(--accent)}
+.gal-btn:active{transform:scale(.95)}
+.gal-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.gallery.is-single .gal-bar{display:none}
 
 
 /* ---------- Fechas ---------- */
@@ -467,7 +481,7 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
   .bio,.booking{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .news{grid-template-columns:minmax(0,1fr);align-items:start}
   .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .gallery{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .gallery{--per:1.25}
   .dates-wrap{grid-template-columns:minmax(0,1fr)}
   .dates-photo{position:relative;top:auto;order:-1;aspect-ratio:16/9;margin-top:32px}
   .dates-photo img{object-position:var(--band-pos,50% 20%)!important}   /* dates.photo.bandPos */
@@ -838,8 +852,25 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
     if(document.fonts) document.fonts.ready.then(fit);
     addEventListener('load',fit); fit();
   })();
-  var g=bio.gallery||[]; $('galeria').hidden=!g.length;
-  $('galeria').innerHTML=g.map(function(p,i){return '<figure class="ph rv-img" style="--d:'+(i%4*80)+'ms">'+img(p)+'</figure>'}).join('');
+  /* gallery: a slider, one photo further each time you press next */
+  var g=bio.gallery||[], gal=$('galeria'); gal.hidden=!g.length; gal.classList.toggle('is-single',g.length<2);
+  var arrow=function(d){ return '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="'+(d<0?'M9 2 4 7l5 5':'M5 2l5 5-5 5')+'" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>'; };
+  var pad=function(n){ return (n<10?'0':'')+n; };
+  gal.innerHTML='<div class="gal-track" tabindex="0">'+g.map(function(p,i){return '<figure class="ph rv-img" style="--d:'+(Math.min(i,3)*80)+'ms" aria-label="'+(i+1)+' / '+g.length+'">'+img(p)+'</figure>'}).join('')+'</div>'+
+    '<div class="gal-bar"><span class="gal-count" aria-live="polite"><b>01</b> / '+pad(g.length)+'</span>'+
+    '<span class="gal-btns"><button type="button" class="gal-btn" data-dir="-1" aria-label="'+t('galPrev')+'">'+arrow(-1)+'</button><button type="button" class="gal-btn" data-dir="1" aria-label="'+t('galNext')+'">'+arrow(1)+'</button></span></div>';
+  (function(){
+    var track=gal.querySelector('.gal-track'), slides=[].slice.call(track.children), count=gal.querySelector('.gal-count b');
+    var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches, at=0;
+    var current=function(){ var best=0,d=1e9; slides.forEach(function(sl,i){ var x=Math.abs(sl.offsetLeft-slides[0].offsetLeft-track.scrollLeft); if(x<d){d=x;best=i;} }); return best; };
+    var go=function(i){
+      at=(i+slides.length)%slides.length; count.textContent=pad(at+1);
+      track.scrollTo({left:slides[at].offsetLeft-slides[0].offsetLeft,behavior:reduce?'auto':'smooth'});
+    };
+    var raf,idle; track.addEventListener('scroll',function(){ clearTimeout(idle); idle=setTimeout(function(){ at=current(); count.textContent=pad(at+1); },120); },{passive:true});
+    gal.querySelectorAll('.gal-btn').forEach(function(b){ b.addEventListener('click',function(){ go(at+ +b.dataset.dir); }); });
+    track.addEventListener('keydown',function(e){ if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ e.preventDefault(); go(at+(e.key==='ArrowRight'?1:-1)); } });
+  })();
 
   /* ---------- dates ---------- */
   var STATUS={tickets:{text:t('tickets'),cls:'',link:true},few:{text:t('few'),cls:'is-hot',link:true},soldout:{text:t('soldout'),cls:'is-off'},private:{text:t('private'),cls:'is-soon'},soon:{text:t('soon'),cls:'is-soon'}};
