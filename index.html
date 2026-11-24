@@ -224,17 +224,18 @@ button,input,select,textarea{font:inherit;color:inherit}
 .gal-track::-webkit-scrollbar{display:none}
 .gal-track{--w:calc((100% - (var(--per) - 1) * var(--gap)) / var(--per))}
 .gal-track figure{flex:0 0 var(--w);aspect-ratio:2/3;scroll-snap-align:start;margin:0}
-.gal-track::after{content:'';flex:0 0 calc(100% - var(--w) - var(--gap))}
-.gal-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
-.gal-count{font-size:14px;letter-spacing:.04em;color:var(--dim);font-variant-numeric:tabular-nums}
-.gal-count b{font-weight:400;color:var(--ink)}
-.gal-btns{display:flex;gap:8px}
-.gal-btn{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--line);border-radius:2px;background:transparent;color:var(--ink);cursor:pointer;transition:background .15s,border-color .15s,transform .16s var(--ease-out)}
-.gal-btn svg{width:14px;height:14px}
-.gal-btn:hover{border-color:var(--accent);background:var(--accent)}
-.gal-btn:active{transform:scale(.95)}
-.gal-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.gallery.is-single .gal-bar{display:none}
+.gallery{position:relative}
+.gal-btn{position:absolute;top:50%;z-index:2;display:grid;place-items:center;width:42px;height:42px;margin-top:-21px;padding:0;border:1px solid rgba(255,255,255,.22);border-radius:50%;background:rgba(0,0,0,.32);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;cursor:pointer;opacity:.75;transition:opacity .25s,background .2s,border-color .2s,transform .2s var(--ease-out)}
+.gal-btn[data-dir="-1"]{left:14px}
+.gal-btn[data-dir="1"]{right:14px}
+.gal-btn svg{width:12px;height:12px}
+.gallery:hover .gal-btn{opacity:.9}
+.gal-btn:hover{opacity:1;background:rgba(0,0,0,.55);border-color:rgba(255,255,255,.5)}
+.gal-btn:active{transform:scale(.92)}
+.gal-btn:focus-visible{opacity:1;outline:2px solid var(--accent);outline-offset:2px}
+.gal-btn.is-off{opacity:0;pointer-events:none;transform:scale(.85)}
+.gallery.is-single .gal-btn{display:none}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 
 /* ---------- Fechas ---------- */
@@ -855,21 +856,29 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
   /* gallery: a slider, one photo further each time you press next */
   var g=bio.gallery||[], gal=$('galeria'); gal.hidden=!g.length; gal.classList.toggle('is-single',g.length<2);
   var arrow=function(d){ return '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="'+(d<0?'M9 2 4 7l5 5':'M5 2l5 5-5 5')+'" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>'; };
-  var pad=function(n){ return (n<10?'0':'')+n; };
   gal.innerHTML='<div class="gal-track" tabindex="0">'+g.map(function(p,i){return '<figure class="ph rv-img" style="--d:'+(Math.min(i,3)*80)+'ms" aria-label="'+(i+1)+' / '+g.length+'">'+img(p)+'</figure>'}).join('')+'</div>'+
-    '<div class="gal-bar"><span class="gal-count" aria-live="polite"><b>01</b> / '+pad(g.length)+'</span>'+
-    '<span class="gal-btns"><button type="button" class="gal-btn" data-dir="-1" aria-label="'+t('galPrev')+'">'+arrow(-1)+'</button><button type="button" class="gal-btn" data-dir="1" aria-label="'+t('galNext')+'">'+arrow(1)+'</button></span></div>';
+    '<button type="button" class="gal-btn is-off" data-dir="-1" aria-label="'+t('galPrev')+'">'+arrow(-1)+'</button><button type="button" class="gal-btn" data-dir="1" aria-label="'+t('galNext')+'">'+arrow(1)+'</button>';
   (function(){
-    var track=gal.querySelector('.gal-track'), slides=[].slice.call(track.children), count=gal.querySelector('.gal-count b');
-    var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches, at=0;
-    var current=function(){ var best=0,d=1e9; slides.forEach(function(sl,i){ var x=Math.abs(sl.offsetLeft-slides[0].offsetLeft-track.scrollLeft); if(x<d){d=x;best=i;} }); return best; };
-    var go=function(i){
-      at=(i+slides.length)%slides.length; count.textContent=pad(at+1);
-      track.scrollTo({left:slides[at].offsetLeft-slides[0].offsetLeft,behavior:reduce?'auto':'smooth'});
+    var track=gal.querySelector('.gal-track'), slides=[].slice.call(track.children);
+    var prev=gal.querySelector('[data-dir="-1"]'), next=gal.querySelector('[data-dir="1"]');
+    var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var x0=function(i){ return slides[i].offsetLeft-slides[0].offsetLeft; };
+    var sync=function(){
+      var max=track.scrollWidth-track.clientWidth, l=track.scrollLeft;
+      prev.classList.toggle('is-off',l<=4); next.classList.toggle('is-off',l>=max-4);
+      if(document.activeElement===prev&&l<=4) next.focus(); if(document.activeElement===next&&l>=max-4) prev.focus();
     };
-    var raf,idle; track.addEventListener('scroll',function(){ clearTimeout(idle); idle=setTimeout(function(){ at=current(); count.textContent=pad(at+1); },120); },{passive:true});
-    gal.querySelectorAll('.gal-btn').forEach(function(b){ b.addEventListener('click',function(){ go(at+ +b.dataset.dir); }); });
-    track.addEventListener('keydown',function(e){ if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ e.preventDefault(); go(at+(e.key==='ArrowRight'?1:-1)); } });
+    var go=function(dir){
+      var l=track.scrollLeft, i;
+      if(dir>0){ for(i=0;i<slides.length&&x0(i)<=l+4;i++); } else { for(i=slides.length-1;i>0&&x0(i)>=l-4;i--); }
+      i=Math.max(0,Math.min(slides.length-1,i));
+      track.scrollTo({left:Math.min(x0(i),track.scrollWidth-track.clientWidth),behavior:reduce?'auto':'smooth'});
+    };
+    var raf; track.addEventListener('scroll',function(){ cancelAnimationFrame(raf); raf=requestAnimationFrame(sync); },{passive:true});
+    addEventListener('resize',sync);
+    prev.addEventListener('click',function(){ go(-1); }); next.addEventListener('click',function(){ go(1); });
+    track.addEventListener('keydown',function(e){ if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ e.preventDefault(); go(e.key==='ArrowRight'?1:-1); } });
+    sync();
   })();
 
   /* ---------- dates ---------- */
