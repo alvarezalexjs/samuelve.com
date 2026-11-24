@@ -8,7 +8,7 @@ window.SITE = {
   name: 'Samuel',
   role: 'DJ & Producer',
   lang: 'en',                             // idioma al abrir la web; el botón EN / ES cambia a español
-  title: 'Samuel (VE)',                    // nombre de la pestaña del navegador
+  title: 'Samuel (VE) | DJ / Producer',                    // nombre de la pestaña del navegador
   description: { en: 'Samuel (VE), House and Tech House DJ and producer based in Barcelona. Upcoming shows, sets and booking.', es: 'Samuel (VE), DJ y productor de House y Tech House en Barcelona. Próximas fechas, sets y booking.' },
   h1: { en: 'Samuel (VE), DJ and producer', es: 'Samuel (VE), DJ y productor' },                     // lo leen Google y los lectores de pantalla; el logo sigue siendo lo que se ve
   share: 'https://samuelve.com/assets/hero.jpg',   // imagen al compartir el link
