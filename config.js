@@ -82,6 +82,8 @@ window.SITE = {
         url: 'https://es.ra.co/events/2546730', lineup: ['Jay de Lys', 'Abril Love', 'Freddy Bello', 'Samuel (VE)'] },
       { date: '2026-10-30', city: 'Barcelona', venue: { en: 'OFF x Fratello at NIX · Halloween', es: 'OFF x Fratello en NIX · Halloween' },
         url: 'https://es.ra.co/events/2546733', lineup: ['Calussa', 'DIROS', 'Sebastián Peña', 'Samuel (VE)'] },
+      { date: '2026-11-06', city: 'Barcelona', venue: { en: 'OFF x Fratello at NIX', es: 'OFF x Fratello en NIX' },
+        url: 'https://es.ra.co/events/2572199', lineup: ['Vito (UK)', 'Ferra Black', 'Samuel (VE)', 'Marau & Taha'] },
 
       /* próximos */
       { date: '2026-11-27', city: 'Barcelona', venue: { en: 'OFF x Fratello at NIX', es: 'OFF x Fratello en NIX' }, url: 'https://es.ra.co/events/2572224',
