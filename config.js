@@ -99,13 +99,13 @@ window.SITE = {
     ]
   },
 
-  /* Set de fondo: suena al primer toque o clic en la web (los navegadores no dejan sonar antes).
-     Aparece un reproductor pequeño abajo a la izquierda para pausarlo o cerrarlo. */
-  music: {
-    title: 'Overtones Radio Show, Episode 037',
-    sc: 'https://soundcloud.com/overtonesrecords/overtones-radio-show-samuel-ve-episode-037',
-    volume: 70
-  },
+  /* Set de fondo (desactivado). Para volver a activarlo, quita los // de estas líneas:
+     suena al primer toque o clic, con un reproductor pequeño abajo a la izquierda. */
+  // music: {
+  //   title: 'Overtones Radio Show, Episode 037',
+  //   sc: 'https://soundcloud.com/overtonesrecords/overtones-radio-show-samuel-ve-episode-037',
+  //   volume: 70
+  // },
 
   sets: {
     note: { en: 'Recorded sets and sessions. Hit play or listen on your platform.', es: 'Sets y sesiones grabadas. Dale play o escúchalos en tu plataforma.' },
