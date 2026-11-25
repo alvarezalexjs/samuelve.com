@@ -1250,9 +1250,9 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
   [['icon','assets/xmas/favicon-32.png'],['apple-touch-icon','assets/xmas/apple-touch-icon.png']].forEach(function(x){ var l=document.createElement('link'); l.rel=x[0]; l.href=x[1]; document.head.appendChild(l); });
 
   /* 1. countdown in the hero, to the next big night */
-  var targets=(X.countdown||[]).map(function(c){return{d:new Date(c.date),label:c.label}}).filter(function(c){return c.d>now});
+  var targets=(X.countdown||[]).map(function(c){return{d:new Date(c.date),label:c.label,href:c.href}}).filter(function(c){return c.d>now});
   if(targets.length){
-    var c=targets[0], el=document.createElement('a'); el.className='xmas-count mono'; el.href='#fechas';
+    var c=targets[0], el=document.createElement('a'); el.className='xmas-count mono'; el.href=c.href||'#fechas';
     var copy=document.querySelector('.copy'); copy.insertBefore(el,copy.firstChild);
     var tick=function(){
       var base=sim?now:new Date(), ms=Math.max(0,c.d-base), d=Math.floor(ms/864e5), h=Math.floor(ms/36e5)%24, m=Math.floor(ms/6e4)%60;
