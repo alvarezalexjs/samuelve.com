@@ -164,7 +164,7 @@ window.SITE = {
     from: '2026-12-01', to: '2027-01-06',
     gold: '#E9B65C',
     countdown: [
-      { date: '2026-12-24T23:00', label: { en: 'Christmas Eve', es: 'Noche Buena' } },
+      { date: '2026-12-24T23:00', label: { en: 'Special Set Christmas Eve', es: 'Set especial Noche Buena' } },
       { date: '2026-12-31T23:30', label: { en: "New Year's Eve", es: 'Nochevieja' } }
     ],
     mix: { title: 'Christmas Mix 2026', meta: { en: 'Out 24.12 • SoundCloud', es: 'Sale el 24.12 • SoundCloud' }, teaser: { en: 'Special Christmas set', es: 'Set especial de Navidad' }, soon: '24.12', url: '' },
