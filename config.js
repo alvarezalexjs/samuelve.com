@@ -65,8 +65,10 @@ window.SITE = {
     gallery: [
       { src: 'assets/photos/white-shirt-decks.jpg', alt: { en: 'Samuel in a white T-shirt with headphones around his neck, looking down at the mixer', es: 'Samuel con camiseta blanca y auriculares al cuello, mirando la mesa de mezclas' }, pos: '50% 30%' },
       { src: 'assets/photos/back-red-booth.jpg', alt: { en: 'Samuel from behind in the booth under red light, facing the OFF x Fratello sign', es: 'Samuel de espaldas en la cabina bajo luz roja, frente al letrero de OFF x Fratello' }, pos: '45% 50%' },
+      { src: 'assets/photos/crowd-palms.jpg', alt: { en: 'Open-air party at night: the crowd in front of the booth under a neon sign, between palm trees and string lights', es: 'Fiesta al aire libre de noche: el público frente a la cabina bajo un letrero de neón, entre palmeras y guirnaldas de luces' }, ratio: 1170/1244 },
       { src: 'assets/photos/bw-mixer.jpg', alt: { en: 'Black and white shot of Samuel in a cap, mixing in the booth', es: 'Samuel con gorra en blanco y negro, mezclando en la cabina' }, pos: '50% 50%' },
-      { src: 'assets/photos/back-blue-crowd.jpg', alt: { en: 'Samuel from behind in the booth, facing the crowd under blue light', es: 'Samuel de espaldas en la cabina, mirando al público bajo luz azul' }, pos: '45% 50%' }
+      { src: 'assets/photos/back-blue-crowd.jpg', alt: { en: 'Samuel from behind in the booth, facing the crowd under blue light', es: 'Samuel de espaldas en la cabina, mirando al público bajo luz azul' }, pos: '45% 50%' },
+      { src: 'assets/photos/bw-hands-up.jpg', alt: { en: 'Black and white shot of Samuel clapping with his hands up behind the decks, under a neon sign', es: 'Samuel en blanco y negro aplaudiendo con las manos en alto tras los platos, bajo un letrero de neón' }, ratio: 1170/1243 }
     ]
   },
 
