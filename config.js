@@ -156,6 +156,21 @@ window.SITE = {
   titleFont: { family: "Archivo Wide", src: "assets/archivo-variable.woff2", range: "100 900", stretchRange: "62% 125%",
     weight: 800, stretch: "125%", size: 0.72, tracking: "-0.04em", lineHeight: 0.9 },
 
+  /* ---------- CAMPAÑA DE NAVIDAD ----------
+     Se enciende sola entre `from` y `to`. `preview: true` la enciende siempre.
+     Para verla antes: samuelve.com/?navidad  (y &hoy=2026-12-24 simula ese día). */
+  xmas: {
+    preview: false,
+    from: '2026-12-01', to: '2027-01-06',
+    gold: '#E9B65C',
+    countdown: [
+      { date: '2026-12-24T23:00', label: { en: 'Christmas Eve', es: 'Noche Buena' } },
+      { date: '2026-12-31T23:30', label: { en: "New Year's Eve", es: 'Nochevieja' } }
+    ],
+    mix: { title: 'Christmas Mix 2026', meta: { en: 'Out 24.12 • SoundCloud', es: 'Sale el 24.12 • SoundCloud' }, teaser: { en: 'Special Christmas set', es: 'Set especial de Navidad' }, soon: '24.12', url: '' },
+    footerFill: { src: 'assets/photos/crowd-palms.jpg', pos: '70% 8%', size: '260% auto' }   // las guirnaldas de luces
+  },
+
   footer: {
     tagline: 'DJ / Producer',                 // línea bajo el logo pequeño del pie
     copyright: '© {year} Samuel (VE). All rights reserved.',   // {year} = año actual

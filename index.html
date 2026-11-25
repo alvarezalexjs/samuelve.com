@@ -563,6 +563,28 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
   .set-cover img,.bio-clip,.bio-more svg,.t-arrow,.recent-clip,.recent-clip .dates>li{transition:none}
   .t-dot,.news-tag i{animation:none}
 }
+
+/* ================= CAMPAÑA DE NAVIDAD ================= */
+.xmas{--gold:#E9B65C}
+.xmas-snow{position:fixed;inset:0;width:100%;height:100%;z-index:45;pointer-events:none}
+.xmas-count{display:inline-flex;align-items:center;gap:10px;height:30px;padding:0 14px 0 12px;border:1px solid color-mix(in srgb,var(--gold) 55%,transparent);border-radius:999px;background:rgba(0,0,0,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:#fff;font-size:12px;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.xmas-count i{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold);flex:none}
+.xmas-count b{font-weight:400;color:var(--gold);font-variant-numeric:tabular-nums}
+.xmas-count:hover{border-color:var(--gold)}
+.set .play.is-soon{display:inline-flex;align-items:center;gap:8px;padding:0 14px;height:34px;width:auto;border-radius:999px;background:rgba(0,0,0,.55);border:1px solid var(--gold);color:var(--gold);font-size:13px;letter-spacing:.08em;cursor:default}
+.xmas-teaser{display:flex;align-items:center;justify-content:center;background:radial-gradient(90% 70% at 50% 40%,color-mix(in srgb,var(--gold) 16%,#0b0b0b),#060606 75%);border:1px solid color-mix(in srgb,var(--gold) 45%,transparent)}
+.xmas-teaser p{display:flex;flex-direction:column;align-items:center;gap:14px;margin:0;padding:0 8%;text-align:center;color:#fff;font-family:"Archivo Wide","Archivo",sans-serif;font-weight:800;font-size:clamp(20px,2.1vw,30px);line-height:1;letter-spacing:-0.02em;text-transform:uppercase}
+.xmas-teaser p i{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold)}
+.xmas-teaser p b{font-size:clamp(56px,7vw,104px);letter-spacing:-0.05em;color:var(--gold)}
+.xmas-teaser p small{font-family:"JBMono",ui-monospace,monospace;font-weight:400;font-size:12px;letter-spacing:.14em;color:var(--dim)}
+.xmas-teaser .play.is-soon{display:none}
+.xmas-pv{position:fixed;right:12px;bottom:12px;z-index:60;display:flex;align-items:center;gap:6px;padding:6px 6px 6px 14px;border-radius:999px;background:#fff;color:#000;font:12px/1 "JBMono",ui-monospace,monospace;box-shadow:0 6px 24px rgba(0,0,0,.5);white-space:nowrap;max-width:calc(100vw - 24px);overflow-x:auto}
+.xmas-pv a{padding:7px 10px;border-radius:999px;background:#eee}
+.xmas-pv a[aria-current]{background:#000;color:#fff}
+@media (max-width:760px){
+  .xmas-count{font-size:11px;height:28px}
+}
+@media (prefers-reduced-motion:reduce){.xmas-snow{display:none}}
 </style>
 
 <a class="skip" href="#bio" data-ui="skip">Skip to content</a>
@@ -959,12 +981,14 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
     if(nx.url){ var tx=$('nextTix'); tx.href=nx.url; tx.hidden=false; tx.setAttribute('aria-label',t('ticketFor',{t:t('tickets'),city:nx.city,date:nx.day+' '+nx.month,seller:seller(nx)})); } }
 
   /* ---------- sets ---------- */
-  var list=sets.items||[], sc=sets.soundcloud||'';
+  /* Christmas mode: on between xmas.from and xmas.to, or with ?navidad in the link to check it beforehand */
+  var xOn=!!S.xmas&&(function(X){ var q=new URLSearchParams(location.search), h=q.get('hoy'), n=h?new Date(h+'T12:00'):new Date(); return X.preview||q.has('navidad')||(n>=new Date(X.from+'T00:00')&&n<=new Date(X.to+'T23:59')); })(S.xmas);
+  var list=(xOn&&S.xmas.mix?[S.xmas.mix]:[]).concat(sets.items||[]), sc=sets.soundcloud||'';
   var where=function(u){ return /youtu/.test(u||'')?'YouTube':/spotify/.test(u||'')?'Spotify':/mixcloud/.test(u||'')?'Mixcloud':'SoundCloud'; };
   if(sets.square) $('sets-list').classList.add('is-square');
   $('sets-list').innerHTML=list.map(function(s,i){
-    return '<li class="set rv" style="--d:'+(i%4*70)+'ms"><div class="set-cover ph rv-img" style="--d:'+(i%4*70)+'ms">'+img({src:s.img,pos:s.pos})+
-      (s.sc?'<button class="play" type="button" data-set="'+i+'" aria-label="'+esc(t('play',{t:s.title}))+'"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5v13L14 8z" fill="currentColor"/></svg></button>'
+    return '<li class="set rv" style="--d:'+(i%4*70)+'ms"><div class="set-cover ph rv-img'+(s.teaser&&!s.img?' xmas-teaser':'')+'" style="--d:'+(i%4*70)+'ms">'+(s.teaser&&!s.img?'<p><i aria-hidden="true"></i>'+esc(s.teaser)+'<b>'+esc(s.soon||'')+'</b></p>':img({src:s.img,pos:s.pos}))+
+      (s.soon?'<span class="play is-soon">'+esc(s.soon)+'</span>':s.sc?'<button class="play" type="button" data-set="'+i+'" aria-label="'+esc(t('play',{t:s.title}))+'"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5v13L14 8z" fill="currentColor"/></svg></button>'
       :'<button class="play is-out" type="button" data-set="'+i+'" aria-label="'+esc(t('listenOn',{t:s.title,p:where(s.url)}))+'">'+icon(where(s.url))+'<span>'+esc(where(s.url))+'</span><svg class="arr" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9 9 3M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>')+'</div>'+
       '<div><h3>'+esc(s.title)+'</h3><p class="set-meta mono">'+esc(s.meta)+'</p></div></li>';
   }).join('');
@@ -1205,6 +1229,75 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
     location.href='mailto:'+((S.booking||{}).email||'')+'?subject='+encodeURIComponent('Booking: '+v('tipo')+', '+v('fecha'))+'&body='+encodeURIComponent(body);
     status.textContent=window.__t('opened');
   });
+})();
+</script>
+<script>
+/* ================= CAMPAÑA DE NAVIDAD =================
+   Todo lo navideño vive aquí: se puede quitar el bloque entero sin tocar nada más. */
+(function(){
+  var S=window.SITE||{}, X=S.xmas; if(!X) return;
+  var $=function(id){return document.getElementById(id)}, L=window.__lang||'en', es=L==='es';
+  var q=new URLSearchParams(location.search), sim=q.get('hoy');
+  var now=sim?new Date(sim+'T12:00'):new Date();
+  var on=X.preview||q.has('navidad')||(now>=new Date(X.from+'T00:00')&&now<=new Date(X.to+'T23:59'));
+  if(!on) return;
+  var root=document.documentElement; root.classList.add('xmas'); if(X.gold) root.style.setProperty('--gold',X.gold);
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+
+  /* favicon with the gold dot */
+  document.querySelectorAll('link[rel~="icon"],link[rel="apple-touch-icon"]').forEach(function(l){ l.remove(); });
+  [['icon','assets/xmas/favicon-32.png'],['apple-touch-icon','assets/xmas/apple-touch-icon.png']].forEach(function(x){ var l=document.createElement('link'); l.rel=x[0]; l.href=x[1]; document.head.appendChild(l); });
+
+  /* 1. countdown in the hero, to the next big night */
+  var targets=(X.countdown||[]).map(function(c){return{d:new Date(c.date),label:c.label}}).filter(function(c){return c.d>now});
+  if(targets.length){
+    var c=targets[0], el=document.createElement('a'); el.className='xmas-count mono'; el.href='#fechas';
+    var copy=document.querySelector('.copy'); copy.insertBefore(el,copy.firstChild);
+    var tick=function(){
+      var base=sim?now:new Date(), ms=Math.max(0,c.d-base), d=Math.floor(ms/864e5), h=Math.floor(ms/36e5)%24, m=Math.floor(ms/6e4)%60;
+      el.innerHTML='<i aria-hidden="true"></i>'+esc(c.label)+' · <b>'+d+'D '+('0'+h).slice(-2)+'H '+('0'+m).slice(-2)+'M</b>';
+      el.setAttribute('aria-label',es?('Faltan '+d+' días para '+c.label):(d+' days to '+c.label));
+    };
+    tick(); if(!sim) setInterval(tick,30000);
+  }
+
+  /* 2. disco-ball sparkles drifting down the whole page (not snow: tiny gold and white glints) */
+  if(!reduce){
+    var cv=document.createElement('canvas'); cv.className='xmas-snow'; cv.setAttribute('aria-hidden','true'); document.body.appendChild(cv);
+    var ctx=cv.getContext('2d'), P=[], dpr=Math.min(devicePixelRatio||1,2), W=0,H=0, run=true;
+    var size=function(){ W=innerWidth; H=innerHeight; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); };
+    size(); addEventListener('resize',size);
+    var n=Math.round(Math.min(60,W/24)), lastY=scrollY;
+    for(var i=0;i<n;i++) P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+.4,v:Math.random()*.25+.08,s:Math.random()*6.28,w:Math.random()*.02+.005,g:Math.random()<.6,z:Math.random()*.25+.05});
+    var draw=function(){
+      if(!run) return; ctx.clearRect(0,0,W,H);
+      var dy=scrollY-lastY; lastY=scrollY;
+      P.forEach(function(p){
+        p.y+=p.v-dy*p.z; p.s+=p.w; p.x+=Math.sin(p.s)*.15;
+        if(p.y>H+4){p.y=-4;p.x=Math.random()*W;} else if(p.y<-4){p.y=H+4;p.x=Math.random()*W;}
+        var a=.35+.45*Math.abs(Math.sin(p.s*2.2));
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.283); ctx.fillStyle=p.g?'rgba(233,182,92,'+a+')':'rgba(255,255,255,'+(a*.8)+')'; ctx.fill();
+        if(p.r>1.4&&a>.7){ ctx.fillStyle='rgba(255,240,215,'+(a-.6)+')'; ctx.fillRect(p.x-p.r*3,p.y-.3,p.r*6,.6); ctx.fillRect(p.x-.3,p.y-p.r*3,.6,p.r*6); }
+      });
+      requestAnimationFrame(draw);
+    };
+    document.addEventListener('visibilitychange',function(){ var was=run; run=!document.hidden; if(run&&!was) requestAnimationFrame(draw); });
+    requestAnimationFrame(draw);
+  }
+
+  /* 3. footer logo lit by the string lights */
+  var f=X.footerFill, foot=$('footLogo');
+  if(f&&f.src&&foot) foot.style.background='url("'+f.src+'") '+(f.pos||'50% 50%')+'/'+(f.size||'cover')+' no-repeat';
+
+  /* preview only: jump between simulated days */
+  if(X.preview||q.has('navidad')){
+    var bar=document.createElement('div'); bar.className='xmas-pv'; var cur=sim||'';
+    bar.innerHTML='PREVIEW '+[['','hoy'],['2026-12-01','1 dic'],['2026-12-20','20 dic'],['2026-12-24','24 dic'],['2026-12-27','27 dic']].map(function(x){
+      var u=new URLSearchParams(location.search); if(x[0]) u.set('hoy',x[0]); else u.delete('hoy');
+      return '<a href="?'+u.toString()+'"'+(x[0]===cur?' aria-current="true"':'')+'>'+x[1]+'</a>'; }).join('');
+    document.body.appendChild(bar);
+  }
 })();
 </script>
 </html>
