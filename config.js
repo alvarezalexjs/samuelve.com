@@ -157,6 +157,7 @@ window.SITE = {
     weight: 800, stretch: "125%", size: 0.72, tracking: "-0.04em", lineHeight: 0.9 },
 
   footer: {
+    tagline: 'DJ / Producer',                 // línea bajo el logo pequeño del pie
     copyright: '© {year} Samuel (VE). All rights reserved.',   // {year} = año actual
     fill: { src: 'assets/photos/walking-red.jpg', pos: '100% 52%', size: '340% auto' }   // la luz roja y naranja junto a él
   }

@@ -429,6 +429,14 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
 .foot-logo svg{display:block;width:100%;height:100%;overflow:visible}
 .foot-bar{display:flex;justify-content:space-between;gap:16px;padding:28px 0 calc(28px + env(safe-area-inset-bottom));margin-top:clamp(32px,4vw,56px);border-top:1px solid var(--line);font-size:12.5px;color:var(--dim)}
 .foot-bar a:hover{color:#fff}
+.foot-info{display:flex;flex-wrap:wrap;align-items:flex-end;gap:28px clamp(32px,5vw,72px);padding-top:clamp(36px,4vw,52px);margin-top:clamp(32px,4vw,56px);border-top:1px solid var(--line);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--nav)}
+.foot-info:empty{display:none}
+.foot-brand{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-right:auto;color:var(--dim);letter-spacing:.04em;text-transform:none}
+.foot-brand img{display:block;height:24px;width:auto}
+.foot-links{display:flex;flex-wrap:wrap;gap:10px clamp(20px,2.2vw,32px)}
+.foot-info a{transition:color .2s ease}
+.foot-info a:hover{color:#fff}
+.foot-info+.foot-bar{border-top:0;margin-top:0;padding-top:clamp(28px,3vw,44px)}
 
 /* ---------- Scroll reveals: everything rises ---------- */
 .can-reveal .rv{opacity:0;transform:translateY(8px);transition:opacity .7s var(--expo),transform .7s var(--expo);transition-delay:var(--d,0ms)}
@@ -537,6 +545,7 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
   .news-row input{flex-basis:100%}
   .news-row .pill{margin:12px 0 14px}
   .foot-bar{flex-direction:column}
+  .foot-info{flex-direction:column;align-items:flex-start;gap:22px}
 }
 
 @media (pointer:coarse){
@@ -686,6 +695,7 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
   <div class="news rv" id="news" hidden></div>
   <div class="contact" id="contact"></div>
   <a class="foot-logo rv-img" id="footLogo" href="#inicio"></a>
+  <div class="foot-info mono" id="footInfo"></div>
   <div class="foot-bar mono">
     <span id="copyright"></span>
     <a href="#inicio" data-ui="backTop">Back to top</a>
@@ -1055,6 +1065,16 @@ a.status.is-hot:hover{background:var(--accent);border-color:var(--accent);color:
     ['pointerdown','keydown'].forEach(function(ev){ addEventListener(ev,first,true); });
   }
   var year=new Date().getFullYear();
+  /* footer info: small logo + tagline, the menu, and every social / listening link once */
+  (function(){
+    var box=$('footInfo'); if(!box||(S.footer&&S.footer.info===false)) return;
+    var tag=(S.footer&&S.footer.tagline)||S.role||'';
+    var navs=[].slice.call(document.querySelectorAll('#dock ul a')).map(function(a){ return '<a href="'+a.getAttribute('href')+'">'+esc(a.textContent)+'</a>'; }).join('');
+    var seen={}, links=[].concat(contact.socials||[],sets.platforms||[]).filter(function(l){ var k=key(l[0]); if(seen[k]) return false; seen[k]=1; return true; });
+    box.innerHTML='<div class="foot-brand">'+(logo?'<img src="'+esc(light)+'" alt="'+esc(NAME)+'">':'<span>'+esc(NAME)+'</span>')+(tag?'<span>'+esc(tag)+'</span>':'')+'</div>'+
+      (navs?'<nav class="foot-links" aria-label="'+esc(t('mainNav'))+'">'+navs+'</nav>':'')+
+      (links.length?'<div class="foot-links">'+links.map(function(l){ return '<a href="'+esc(l[1])+'" target="_blank" rel="noopener">'+esc(l[0])+'</a>'; }).join('')+'</div>':'');
+  })();
   $('copyright').textContent=S.footer&&S.footer.copyright?String(S.footer.copyright).replace('{year}',year):'© '+year+' '+NAME;
 })();
 </script>
